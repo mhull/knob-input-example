@@ -33,14 +33,6 @@ function KnobInput(settings) {
 
   initializeKnob();
 
-  /** Desktop (drag) **/
-  knob.addEventListener('dragstart', dragstart);
-  knob.addEventListener('dragend', dragend);
-  document.addEventListener('dragover', dragover);
-
-  /** Non-Desktop (touch) **/
-  knob.addEventListener('touchmove', touchmove);
-
   function isValidSettings() {
     return Boolean( settings.el ) &&
       ( ! settings.initialAngle || parseFloat(settings.initialAngle) );
@@ -49,6 +41,8 @@ function KnobInput(settings) {
   function initializeKnob() {
     initializeSettings();
     initializeRotationAmount();
+
+    addEventListeners();
   }
 
   function initializeSettings() {
@@ -67,6 +61,16 @@ function KnobInput(settings) {
 
   function initializeRotationAmount() {
     setKnobAngle(clientAngleToKnobAngle(settings.initialAngle));
+  }
+
+  function addEventListeners() {
+    /** Desktop (drag) **/
+    knob.addEventListener('dragstart', dragstart);
+    knob.addEventListener('dragend', dragend);
+    document.addEventListener('dragover', dragover);
+
+    /** Non-Desktop (touch) **/
+    knob.addEventListener('touchmove', touchmove);
   }
 
   function dragstart(event) {
