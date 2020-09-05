@@ -32,12 +32,21 @@ function KnobInput(settings) {
   let isDraggingKnob = false;
 
   let currentAngle = null;
+  let currentInteractionInitialKnobAngle = null;
+  let currentInteractionInitialClientAngle = null;
 
   initializeKnob();
 
   function setCurrentAngle(angle) {
-    let float = parseFloat(angle);
-    float && (currentAngle = angle);
+    currentAngle = angle;
+  }
+
+  function setCurrentInteractionInitialKnobAngle(angle) {
+    currentInteractionInitialKnobAngle = angle;
+  }
+
+  function setCurrentInteractionInitialClientAngle(angle) {
+    currentInteractionInitialClientAngle = angle;
   }
 
   function isValidSettings() {
@@ -73,11 +82,16 @@ function KnobInput(settings) {
     document.addEventListener('dragover', dragover);
 
     /** Non-Desktop (touch) **/
+    knob.addEventListener('touchstart', touchstart);
     knob.addEventListener('touchmove', touchmove);
   }
 
   function dragstart(event) {
     setDraggingKnob(true);
+
+    let position = getMousePosition(event);
+    initializeInteraction(position);
+
     setDragImage(event);
   }
 
@@ -86,7 +100,7 @@ function KnobInput(settings) {
   }
 
   function dragover(event) {
-    isDraggingKnob && rotateKnobToPosition(getMousePosition(event));
+    isDraggingKnob && updateKnobFromClientPosition(getMousePosition(event));
   }
 
   function setDraggingKnob(value) {
@@ -104,8 +118,12 @@ function KnobInput(settings) {
     };
   }
 
+  function touchstart(event) {
+    initializeInteraction(getTouchPosition(event));
+  }
+
   function touchmove(event) {
-    rotateKnobToPosition(getTouchPosition(event));
+    updateKnobFromClientPosition(getTouchPosition(event));
   }
 
   function getTouchPosition(event) {
@@ -116,6 +134,11 @@ function KnobInput(settings) {
       };
   }
 
+  function initializeInteraction(position) {
+    setCurrentInteractionInitialKnobAngle(currentAngle);
+    setCurrentInteractionInitialClientAngle(getAngle(position));
+  }
+
   function isValidTouch(event) {
     return event.isTrusted && isSingleTouch(event);
   }
@@ -124,9 +147,13 @@ function KnobInput(settings) {
     return 1 === event.changedTouches.length;
   }
 
-  function rotateKnobToPosition(position) {
-    let angle = position && getAngle(position);
-    angle && rotateKnobToAngle(angle);
+  function updateKnobFromClientPosition(position) {
+    let angle = getAngle(position);
+
+    let amountRotated = angle - currentInteractionInitialClientAngle;
+    let newKnobAngle = currentInteractionInitialKnobAngle + amountRotated;
+
+    rotateKnobToAngle(newKnobAngle);
   }
 
   function rotateKnobToAngle(angle) {
