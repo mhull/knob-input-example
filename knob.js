@@ -31,7 +31,14 @@ function KnobInput(settings) {
 
   let isDraggingKnob = false;
 
+  let currentAngle = null;
+
   initializeKnob();
+
+  function setCurrentAngle(angle) {
+    let float = parseFloat(angle);
+    float && (currentAngle = angle);
+  }
 
   function isValidSettings() {
     return Boolean( settings.el ) &&
@@ -40,7 +47,7 @@ function KnobInput(settings) {
 
   function initializeKnob() {
     initializeSettings();
-    initializeRotationAmount();
+    rotateKnobToAngle(settings.initialAngle);
 
     addEventListeners();
   }
@@ -57,10 +64,6 @@ function KnobInput(settings) {
     return {
       initialAngle: 90,
     }
-  }
-
-  function initializeRotationAmount() {
-    setKnobAngle(clientAngleToKnobAngle(settings.initialAngle));
   }
 
   function addEventListeners() {
@@ -83,7 +86,7 @@ function KnobInput(settings) {
   }
 
   function dragover(event) {
-    isDraggingKnob && rotateKnobToClientPosition(getMousePosition(event));
+    isDraggingKnob && rotateKnobToPosition(getMousePosition(event));
   }
 
   function setDraggingKnob(value) {
@@ -102,7 +105,7 @@ function KnobInput(settings) {
   }
 
   function touchmove(event) {
-    rotateKnobToClientPosition(getTouchPosition(event));
+    rotateKnobToPosition(getTouchPosition(event));
   }
 
   function getTouchPosition(event) {
@@ -121,8 +124,14 @@ function KnobInput(settings) {
     return 1 === event.changedTouches.length;
   }
 
-  function rotateKnobToClientPosition(position) {
-    position && setKnobAngle(clientAngleToKnobAngle(getClientAngle(position)));
+  function rotateKnobToPosition(position) {
+    let angle = position && getAngle(position);
+    angle && rotateKnobToAngle(angle);
+  }
+
+  function rotateKnobToAngle(angle) {
+    setCurrentAngle(angle);
+    setKnobCssRotationAmount(angleToCssAngle(angle));
   }
 
   function getKnobSelector() {
@@ -177,18 +186,18 @@ function KnobInput(settings) {
     return ( dist.x > 0 ) ? arcsine : (180 - arcsine)
   }
 
-  function getClientAngle(clientPosition) {
-    let dist = getDistance(clientPosition);
+  function getAngle(position) {
+    let dist = getDistance(position);
     let arcsine = radToDeg(getArcsine(dist));
 
     return arcsineToAngle(arcsine, dist);
   }
 
-  function clientAngleToKnobAngle(degrees) {
+  function angleToCssAngle(degrees) {
     return -1 * (degrees - 90)
   }
 
-  function setKnobAngle(degrees) {
+  function setKnobCssRotationAmount(degrees) {
     knob.style.transform = `rotate(${degrees}deg)`;
   }
 }
