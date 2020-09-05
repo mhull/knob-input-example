@@ -29,7 +29,7 @@ function KnobInput(settings) {
   let knob = getKnob();
   let center = getCenter();
 
-  let elCurrentlyDragging = null;
+  let isDraggingKnob = false;
 
   initializeKnob();
 
@@ -74,28 +74,24 @@ function KnobInput(settings) {
   }
 
   function dragstart(event) {
-    setElCurrentlyDragging(knob);
+    setDraggingKnob(true);
     setDragImage(event);
   }
 
   function dragend() {
-    setElCurrentlyDragging(null);
+    setDraggingKnob(false);
   }
 
   function dragover(event) {
-    isDraggingKnob() && rotateKnobToClientPosition(getMousePosition(event));
+    isDraggingKnob && rotateKnobToClientPosition(getMousePosition(event));
   }
 
-  function isDraggingKnob() {
-    return null !== elCurrentlyDragging;
+  function setDraggingKnob(value) {
+    isDraggingKnob = Boolean(value);
   }
 
   function setDragImage(event) {
     event.dataTransfer.setDragImage(document.createElement('div'), 0, 0);
-  }
-
-  function setElCurrentlyDragging(el) {
-    elCurrentlyDragging = el;
   }
 
   function getMousePosition(event) {
