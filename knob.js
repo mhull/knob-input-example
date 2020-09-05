@@ -5,13 +5,17 @@ knobs.length &&
 
 function KnobInput( container ) {
   let knob = getKnob(container);
-  let elCurrentlyDragging = null;
   let center = getCenter(knob);
 
+  let elCurrentlyDragging = null;
+
+  /** Desktop (drag) **/
   knob.addEventListener('dragstart', dragstart);
   knob.addEventListener('dragend', dragend);
-
   document.addEventListener('dragover', dragover);
+
+  /** Non-Desktop (touch) **/
+  knob.addEventListener('touchmove', touchmove);
 
   function dragstart(event) {
     setElCurrentlyDragging(event.target);
@@ -37,8 +41,42 @@ function KnobInput( container ) {
     return null !== elCurrentlyDragging;
   }
 
+  function setDragImage(event) {
+    event.dataTransfer.setDragImage(document.createElement('div'), 0, 0);
+  }
+
   function setElCurrentlyDragging(el) {
     elCurrentlyDragging = el;
+  }
+
+  function getMousePosition(event) {
+    return {
+      x: event.pageX,
+      y: event.pageY,
+    };
+  }
+
+  function touchmove(event) {
+    let touch = getTouchPosition(event);
+    let knobAngle = touch && mouseAngleToKnobAngle(getMouseAngle(touch));
+
+    knobAngle && setKnobAngle(knobAngle);
+  }
+
+  function getTouchPosition(event) {
+    return isValidTouch(event) &&
+      {
+        x: event.changedTouches[0].pageX,
+        y: event.changedTouches[0].pageY,
+      };
+  }
+
+  function isValidTouch(event) {
+    return event.isTrusted && isSingleTouch(event);
+  }
+
+  function isSingleTouch(event) {
+    return 1 === event.changedTouches.length;
   }
 
   function getKnobSelector() {
@@ -56,17 +94,6 @@ function KnobInput( container ) {
       x: (rect.left + rect.right)/2,
       y: (rect.top + rect.bottom)/2,
     }
-  }
-
-  function setDragImage(event) {
-    event.dataTransfer.setDragImage(document.createElement('div'), 0, 0);
-  }
-
-  function getMousePosition(event) {
-    return {
-      x: event.pageX,
-      y: event.pageY,
-    };
   }
 
   function getDistX(mouse) {
