@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Knob Component Example</title>
+
+  <!-- Prevents 404 from browsers trying to find the favicon -->
+  <link rel="shortcut icon" href="data:image/x-icon;base64," type="image/x-icon">
+  <link rel="stylesheet" href="/knobs/component/knob.css">
+
+  <!-- CSS Reset -->
+  <link rel="stylesheet" href="data:text/css;base64,KiwqOjpiZWZvcmUsKjo6YWZ0ZXJ7Ym94LXNpemluZzpib3JkZXItYm94fXVsW2NsYXNzXSxvbFtjbGFzc117cGFkZGluZzowfWJvZHksaDEsaDIsaDMsaDQscCx1bFtjbGFzc10sb2xbY2xhc3NdLGZpZ3VyZSxibG9ja3F1b3RlLGRsLGRke21hcmdpbjowfWh0bWx7c2Nyb2xsLWJlaGF2aW9yOnNtb290aH1ib2R5e21pbi1oZWlnaHQ6MTAwdmg7dGV4dC1yZW5kZXJpbmc6b3B0aW1pemVTcGVlZDtsaW5lLWhlaWdodDoxLjV9dWxbY2xhc3NdLG9sW2NsYXNzXXtsaXN0LXN0eWxlOm5vbmV9YTpub3QoW2NsYXNzXSl7dGV4dC1kZWNvcmF0aW9uLXNraXAtaW5rOmF1dG99aW1nLHBpY3R1cmV7bWF4LXdpZHRoOjEwMCU7ZGlzcGxheTpibG9ja31hcnRpY2xlPiorKnttYXJnaW4tdG9wOjFlbX1pbnB1dCxidXR0b24sdGV4dGFyZWEsc2VsZWN0e2ZvbnQ6aW5oZXJpdH1pbWc6bm90KFthbHRdKXtmaWx0ZXI6Ymx1cigxMHB4KX1AbWVkaWEocHJlZmVycy1yZWR1Y2VkLW1vdGlvbjpyZWR1Y2Upeyp7YW5pbWF0aW9uLWR1cmF0aW9uOi4wMW1zICFpbXBvcnRhbnQ7YW5pbWF0aW9uLWl0ZXJhdGlvbi1jb3VudDoxICFpbXBvcnRhbnQ7dHJhbnNpdGlvbi1kdXJhdGlvbjouMDFtcyAhaW1wb3J0YW50O3Njcm9sbC1iZWhhdmlvcjphdXRvICFpbXBvcnRhbnR9fQo=">
+
+  <!-- Styling this specific example's surrounding context -->
+  <style>
+    main {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+    }
+    .knob.component {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      margin: auto;
+
+      width: 200px;
+      height: 200px;
+    }
+  </style>
+</head>
+
+<body>
+<main>
+  <div class="knob component">
+    <div class="knob body" draggable="true">
+      <div class="knob notch"></div>
+    </div>
+  </div>
+</main>
+<script src="/knobs/component/knob.js"></script>
+</body>
+</html>

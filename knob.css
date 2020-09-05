@@ -1,0 +1,21 @@
+div.knob.component label {
+  display: block; }
+div.knob.component .knob.body {
+  height: 200px;
+  width: 200px;
+  position: relative;
+  border: solid 1px #000;
+  border-radius: 50%;
+  cursor: pointer;
+  transform-origin: center; }
+div.knob.component .knob.notch {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  margin: auto;
+  height: 66.66667px;
+  width: 1px;
+  background: #000; }
+
+/*# sourceMappingURL=knob.css.map */

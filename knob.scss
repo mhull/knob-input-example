@@ -1,0 +1,32 @@
+div.knob.component {
+  $knobSize: 200px;
+
+  label {
+    display: block;
+  }
+
+  .knob.body {
+    height: $knobSize;
+    width: $knobSize;
+
+    position: relative;
+
+    border: solid 1px #000;
+    border-radius: 50%;
+    cursor: pointer;
+
+    transform-origin: center;
+  }
+
+  .knob.notch {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    margin: auto;
+
+    height: $knobSize / 3;
+    width: 1px;
+    background: #000;
+  }
+}
