@@ -1,10 +1,10 @@
 let knobs = document.querySelectorAll('.knob.component');
 
 knobs.length &&
-  knobs.forEach( knob => KnobInput(knob) );
+  knobs.forEach( knob => KnobInput({ el: knob }) );
 
-function KnobInput( container ) {
-  let knob = getKnob(container);
+function KnobInput(settings) {
+  let knob = getKnob(settings.el);
   let center = getCenter(knob);
 
   let elCurrentlyDragging = null;
