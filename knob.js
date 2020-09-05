@@ -27,14 +27,7 @@ function KnobInput( container ) {
   }
 
   function dragover(event) {
-    if( ! isDraggingKnob() ) {
-      return;
-    }
-
-    let mouse = getMousePosition(event);
-    let knobAngle = mouseAngleToKnobAngle(getMouseAngle(mouse));
-
-    setKnobAngle(knobAngle);
+    isDraggingKnob() && rotateKnobToClientPosition(getMousePosition(event));
   }
 
   function isDraggingKnob() {
@@ -57,10 +50,7 @@ function KnobInput( container ) {
   }
 
   function touchmove(event) {
-    let touch = getTouchPosition(event);
-    let knobAngle = touch && mouseAngleToKnobAngle(getMouseAngle(touch));
-
-    knobAngle && setKnobAngle(knobAngle);
+    rotateKnobToClientPosition(getTouchPosition(event));
   }
 
   function getTouchPosition(event) {
@@ -77,6 +67,10 @@ function KnobInput( container ) {
 
   function isSingleTouch(event) {
     return 1 === event.changedTouches.length;
+  }
+
+  function rotateKnobToClientPosition(position) {
+    position && setKnobAngle(clientAngleToKnobAngle(getClientAngle(position)));
   }
 
   function getKnobSelector() {
@@ -131,15 +125,15 @@ function KnobInput( container ) {
     return ( dist.x > 0 ) ? arcsine : (180 - arcsine)
   }
 
-  function getMouseAngle(mouse) {
-    let dist = getDistance(mouse);
+  function getClientAngle(clientPosition) {
+    let dist = getDistance(clientPosition);
     let arcsine = radToDeg(getArcsine(dist));
 
     return arcsineToAngle(arcsine, dist);
   }
 
-  function mouseAngleToKnobAngle(mouseDegrees) {
-    return -1 * (mouseDegrees - 90)
+  function clientAngleToKnobAngle(degrees) {
+    return -1 * (degrees - 90)
   }
 
   function setKnobAngle(degrees) {
