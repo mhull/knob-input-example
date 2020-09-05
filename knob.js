@@ -4,10 +4,34 @@ knobs.length &&
   knobs.forEach( knob => KnobInput({ el: knob }) );
 
 function KnobInput(settings) {
-  let knob = getKnob(settings.el);
-  let center = getCenter(knob);
+  /**
+   * @var {object} settings
+   *
+   * @property el
+   *   (Required) Knob component root element
+   *
+   * @property initialAngle
+   *   Default: 90
+   *
+   *   Angle at which the knob value indicator should be initialized. Angle measurement is defined as follows:
+   *     - An xy-plane containing the device viewport is imagined to be the overall context
+   *     - The center of DOM element given by `settings.el` is the origin of the xy-plane
+   *     - From here, we follow standard trigonometric angle measurement definition:
+   *       - The angle's vertex point is defined to be the origin
+   *       - Measurement begins at the positive x-axis (i.e. The zero angle is the positive x-axis itself)
+   *       - Measurement in the positive direction is defined to be counter-clockwise
+   *       - Measurement in the negative direction is defined to be clockwise
+   */
+  if( ! isValidSettings() ) {
+    return;
+  }
+
+  let knob = getKnob();
+  let center = getCenter();
 
   let elCurrentlyDragging = null;
+
+  initializeKnob();
 
   /** Desktop (drag) **/
   knob.addEventListener('dragstart', dragstart);
@@ -17,8 +41,36 @@ function KnobInput(settings) {
   /** Non-Desktop (touch) **/
   knob.addEventListener('touchmove', touchmove);
 
+  function isValidSettings() {
+    return Boolean( settings.el ) &&
+      ( ! settings.initialAngle || parseFloat(settings.initialAngle) );
+  }
+
+  function initializeKnob() {
+    initializeSettings();
+    initializeRotationAmount();
+  }
+
+  function initializeSettings() {
+    updateSetting( 'initialAngle', parseFloat(settings.initialAngle) || getDefaultSettings().initialAngle );
+  }
+
+  function updateSetting( key, value ) {
+    settings[key] = value;
+  }
+
+  function getDefaultSettings() {
+    return {
+      initialAngle: 90,
+    }
+  }
+
+  function initializeRotationAmount() {
+    setKnobAngle(clientAngleToKnobAngle(settings.initialAngle));
+  }
+
   function dragstart(event) {
-    setElCurrentlyDragging(event.target);
+    setElCurrentlyDragging(knob);
     setDragImage(event);
   }
 
@@ -77,11 +129,11 @@ function KnobInput(settings) {
     return '.knob.body';
   }
 
-  function getKnob(parentEl) {
-    return parentEl.querySelector(getKnobSelector());
+  function getKnob() {
+    return settings.el.querySelector(getKnobSelector());
   }
 
-  function getCenter(knob) {
+  function getCenter() {
     let rect = knob.getBoundingClientRect();
 
     return {
