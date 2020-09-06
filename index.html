@@ -31,12 +31,21 @@
       width: 200px;
       height: 200px;
     }
+
+    .knob.input {
+      margin-bottom: 10px;
+    }
   </style>
 </head>
 
 <body>
 <main>
-  <div class="knob component">
+  <div id="knob-input-example" class="knob component">
+    <div class="knob input">
+      <label for="knob-input-example__input">Value:</label>
+      <input id="knob-input-example__input" type="text" value="">
+    </div>
+
     <div class="knob body" draggable="true">
       <div class="knob notch"></div>
     </div>

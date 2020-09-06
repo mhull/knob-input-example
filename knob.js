@@ -27,6 +27,7 @@ function KnobInput(settings) {
   }
 
   let knob = getKnob();
+  let input = getInput();
   let center = getCenter();
 
   let isDraggingKnob = false;
@@ -57,7 +58,7 @@ function KnobInput(settings) {
   function initializeKnob() {
     initializeSettings();
     rotateKnobToAngle(settings.initialAngle);
-
+    updateInputValue(settings.initialAngle);
     addEventListeners();
   }
 
@@ -84,6 +85,8 @@ function KnobInput(settings) {
     /** Non-Desktop (touch) **/
     knob.addEventListener('touchstart', touchstart);
     knob.addEventListener('touchmove', touchmove);
+
+    input.addEventListener('change', changeInputValue);
   }
 
   function dragstart(event) {
@@ -147,6 +150,11 @@ function KnobInput(settings) {
     return 1 === event.changedTouches.length;
   }
 
+  function changeInputValue(event) {
+    let value = parseFloat(event.target.value);
+    value && rotateKnobToAngle(value);
+  }
+
   function updateKnobFromClientPosition(position) {
     let angle = getAngle(position);
 
@@ -154,11 +162,16 @@ function KnobInput(settings) {
     let newKnobAngle = currentInteractionInitialKnobAngle + amountRotated;
 
     rotateKnobToAngle(newKnobAngle);
+    updateInputValue(newKnobAngle);
   }
 
   function rotateKnobToAngle(angle) {
     setCurrentAngle(angle);
     setKnobCssRotationAmount(angleToCssAngle(angle));
+  }
+
+  function updateInputValue(value) {
+    input.value = value;
   }
 
   function getKnobSelector() {
@@ -167,6 +180,10 @@ function KnobInput(settings) {
 
   function getKnob() {
     return settings.el.querySelector(getKnobSelector());
+  }
+
+  function getInput() {
+    return settings.el.querySelector('.knob.input input');
   }
 
   function getCenter() {
