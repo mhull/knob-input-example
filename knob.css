@@ -17,5 +17,17 @@ div.knob.component .knob.notch {
   height: 66.66667px;
   width: 1px;
   background: #000; }
+div.knob.component .knob.body:focus {
+  outline: none; }
+  div.knob.component .knob.body:focus .knob.notch::after {
+    position: absolute;
+    left: -1px;
+    top: 0;
+    right: 0;
+    margin: auto;
+    content: '';
+    width: 3px;
+    height: 100%;
+    outline: dotted 1px #aaa; }
 
 /*# sourceMappingURL=knob.css.map */

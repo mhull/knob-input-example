@@ -29,4 +29,20 @@ div.knob.component {
     width: 1px;
     background: #000;
   }
+
+  .knob.body:focus {
+    outline: none;
+
+    .knob.notch::after {
+      position: absolute;
+      left: -1px;
+      top: 0;
+      right: 0;
+      margin: auto;
+      content: '';
+      width: 3px;
+      height:100%;
+      outline: dotted 1px #aaa;
+    }
+  }
 }
