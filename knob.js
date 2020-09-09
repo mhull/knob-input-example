@@ -20,6 +20,18 @@ KnobInput({
  *       - Measurement begins at the positive x-axis (i.e. The zero angle is the positive x-axis itself)
  *       - Measurement in the positive direction is defined to be counter-clockwise
  *       - Measurement in the negative direction is defined to be clockwise
+ *
+ * @property {object} range
+ *   Default: null
+ *   The set of values the knob input may take on
+ *
+ *   @property {object} min
+ *     @property {number} angle
+ *     @property {number} value
+ *
+ *   @property {object} max
+ *     @property {number} angle
+ *     @property {number} value
  */
 function KnobInput(settings) {
   if( ! isValidSettings() ) {
@@ -33,7 +45,6 @@ function KnobInput(settings) {
   let isDraggingKnob = false;
 
   let currentAngle = null;
-  let currentValue = null;
 
   let currentInteractionInitialKnobAngle = null;
   let currentInteractionInitialClientAngle = null;
@@ -42,14 +53,34 @@ function KnobInput(settings) {
 
   function initializeKnob() {
     initializeSettings();
+    setInputValue(getInitialValue());
     rotateKnobToAngle(settings.initialAngle);
-    setInputValue(settings.initialAngle);
     addEventListeners();
   }
 
   function isValidSettings() {
-    return Boolean( settings.el ) &&
-      ( ! settings.initialAngle || parseFloat(settings.initialAngle) );
+    return isValidDomElement() &&
+      isValidInitialAngle() &&
+      isValidMin() &&
+      isValidMax();
+  }
+
+  function isValidDomElement() {
+    return settings.el?.matches('.knob.component');
+  }
+
+  function isValidInitialAngle() {
+    return ! settings.initialAngle || parseFloat(settings.initialAngle);
+  }
+
+  function isValidMin() {
+    return ! settings.range?.min ||
+      ('number' === typeof settings.range?.min?.angle && 'number' === typeof settings.range?.min?.value);
+  }
+
+  function isValidMax() {
+    return ! settings.range?.max ||
+      'number' === typeof settings.range?.max?.angle && 'number' === typeof settings.range?.max?.value;
   }
 
   function getKnob() {
@@ -74,17 +105,67 @@ function KnobInput(settings) {
   }
 
   function initializeSettings() {
-    updateSetting( 'initialAngle', parseFloat(settings.initialAngle) || getDefaultSettings().initialAngle );
+    updateSetting('range', getInitialRange());
+    updateSetting('initialAngle', parseFloat(settings.initialAngle) || getDefaultSettings().initialAngle);
   }
 
-  function updateSetting( key, value ) {
-    settings[key] = value;
+  function getInitialRange() {
+    return {
+      min: getInitialMin(),
+      max: getInitialMax(),
+    };
+  }
+
+  function getInitialMin() {
+    return settings.range?.min || getDefaultSettings().range.min;
+  }
+
+  function getInitialMax() {
+    return settings.range?.max || getDefaultSettings().range.max;
   }
 
   function getDefaultSettings() {
     return {
-      initialAngle: 90,
+      initialAngle: 225,
+      range: {
+        min: {
+          angle: 225,
+          value: 0,
+        },
+        max: {
+          angle: -45,
+          value: 100
+        },
+      },
     }
+  }
+
+  function updateSetting(key, value) {
+    settings[key] = value;
+  }
+
+  function getInitialValue() {
+    return getValueForAngle(settings.initialAngle);
+  }
+
+  function getValueForAngle(angle) {
+    return getArcPercentForAngle(angle) * getExtremeValuesDiff() + settings.range.min.value;
+  }
+
+  function getArcPercentForAngle(angle) {
+    return Math.abs(angle - settings.range.min.angle) / getExtremeValuesAngleDiff();
+  }
+
+  function getExtremeValuesDiff() {
+    return Math.abs(settings.range.max.value - settings.range.min.value);
+  }
+
+  function getDirectionSign() {
+    return settings.range.max.angle > settings.range.min.angle ? 1 : -1;
+  }
+
+  function getExtremeValuesAngleDiff() {
+    return Math.abs(settings.range.max.angle - settings.range.min.angle);
   }
 
   function rotateKnobToAngle(angle) {
@@ -168,8 +249,12 @@ function KnobInput(settings) {
     let amountRotated = angle - currentInteractionInitialClientAngle;
     let newKnobAngle = currentInteractionInitialKnobAngle + amountRotated;
 
+    if(! isAngleInRange(newKnobAngle)) {
+      newKnobAngle = replaceOutOfRangeAngle(newKnobAngle);
+    }
+
     rotateKnobToAngle(newKnobAngle);
-    setInputValue(newKnobAngle);
+    setInputValue(getValueForAngle(newKnobAngle));
   }
 
   function getAngle(position) {
@@ -177,6 +262,16 @@ function KnobInput(settings) {
     let arcsine = radToDeg(getArcsine(dist));
 
     return arcsineToAngle(arcsine, dist);
+  }
+
+  function isAngleInRange(angle) {
+    return getDirectionSign() > 0 ?
+      settings.range.min.angle < angle && angle < settings.range.max.angle :
+      settings.range.max.angle < angle && angle < settings.range.min.angle;
+  }
+
+  function replaceOutOfRangeAngle(angle) {
+    return (getArcPercentForAngle(angle) < 0.5) ? settings.range.min.angle : settings.range.max.angle;
   }
 
   function getDistance(mouse) {
@@ -212,8 +307,12 @@ function KnobInput(settings) {
 
   function arcsineToAngle(arcsine, dist) {
     return ( dist.x > 0 ) ?
-      ( 360 + arcsine ) % 360 :
-      (180 - arcsine);
+      getFullRotationCount() + arcsine :
+      getFullRotationCount() + (180 - arcsine);
+  }
+
+  function getFullRotationCount() {
+    return Math.floor( currentAngle / 360 );
   }
 
   function angleToCssAngle(degrees) {
@@ -246,6 +345,18 @@ function KnobInput(settings) {
 
   function changeInputValue(event) {
     let value = parseFloat(event.target.value);
-    value && rotateKnobToAngle(value);
+    (value || 0 === value) && rotateKnobToValue(value);
+  }
+
+  function rotateKnobToValue(value) {
+    rotateKnobToAngle(getAngleForValue(value));
+  }
+
+  function getAngleForValue(value) {
+    return getValuePercent(value) * getExtremeValuesAngleDiff() * getDirectionSign() + settings.range.min.angle;
+  }
+
+  function getValuePercent(value) {
+    return Math.abs(value - settings.range.min.value) / getExtremeValuesDiff();
   }
 }
