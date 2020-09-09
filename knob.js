@@ -1,7 +1,7 @@
-let knobs = document.querySelectorAll('.knob.component');
 
-knobs.length &&
-  knobs.forEach( knob => KnobInput({ el: knob }) );
+KnobInput({
+  el: document.querySelector('.knob.component'),
+})
 
 function KnobInput(settings) {
   /**
