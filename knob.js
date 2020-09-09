@@ -227,7 +227,9 @@ function KnobInput(settings) {
   }
 
   function arcsineToAngle(arcsine, dist) {
-    return ( dist.x > 0 ) ? arcsine : (180 - arcsine)
+    return ( dist.x > 0 ) ?
+      ( 360 + arcsine ) % 360 :
+      (180 - arcsine);
   }
 
   function getAngle(position) {
