@@ -1,4 +1,5 @@
 import './style.scss';
+import template from './template.html';
 
 /**
  * @param {object} settings
@@ -35,9 +36,9 @@ export default function(settings) {
     return;
   }
 
-  let knob = getKnob();
-  let input = getInput();
-  let center = getCenter();
+  let knob;
+  let input;
+  let center;
 
   let isDraggingKnob = false;
 
@@ -50,6 +51,12 @@ export default function(settings) {
 
   function initializeKnob() {
     initializeSettings();
+    injectTemplate();
+
+    knob = getKnob();
+    input = getInput();
+    center = getCenter();
+
     setInputValue(getInitialValue());
     rotateKnobToAngle(settings.initialAngle);
     addEventListeners();
@@ -63,7 +70,7 @@ export default function(settings) {
   }
 
   function isValidDomElement() {
-    return settings.el?.matches('.knob.component');
+    return Boolean(settings.el);
   }
 
   function isValidInitialAngle() {
@@ -139,6 +146,13 @@ export default function(settings) {
 
   function updateSetting(key, value) {
     settings[key] = value;
+  }
+
+  function injectTemplate() {
+    settings.el.classList.add('knob')
+    settings.el.classList.add('component')
+
+    settings.el.innerHTML = template;
   }
 
   function getInitialValue() {
