@@ -1,0 +1,21 @@
+/* Styles for this specific example's surrounding context */
+main {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+}
+.knob.component {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+
+  width: 200px;
+  height: 200px;
+}
+
+.knob.input {
+  margin-bottom: 10px;
+}
