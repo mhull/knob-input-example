@@ -2,6 +2,6 @@ import './main.scss';
 import KnobInput from './src/components/KnobInput';
 
 KnobInput({
-  el: document.querySelector('#knob-input-example'),
+  element: document.querySelector('#knob-input-example'),
+  initialValue: 75,
 });
-
